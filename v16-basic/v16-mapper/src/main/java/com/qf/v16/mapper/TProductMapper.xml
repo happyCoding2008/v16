@@ -46,7 +46,7 @@
       #{flag,jdbcType=BIT}, #{typeId,jdbcType=BIGINT}, #{typeName,jdbcType=VARCHAR}, 
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.qf.v16.entity.TProduct">
+  <insert id="insertSelective" parameterType="com.qf.v16.entity.TProduct" useGeneratedKeys="true" keyProperty="id">
     insert into t_product
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -67,21 +67,15 @@
       <if test="salePoint != null">
         sale_point,
       </if>
-      <if test="flag != null">
         flag,
-      </if>
       <if test="typeId != null">
         type_id,
       </if>
       <if test="typeName != null">
         type_name,
       </if>
-      <if test="createTime != null">
         create_time,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
+        update_time
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -102,21 +96,15 @@
       <if test="salePoint != null">
         #{salePoint,jdbcType=VARCHAR},
       </if>
-      <if test="flag != null">
-        #{flag,jdbcType=BIT},
-      </if>
+      1,
       <if test="typeId != null">
         #{typeId,jdbcType=BIGINT},
       </if>
       <if test="typeName != null">
         #{typeName,jdbcType=VARCHAR},
       </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
+      now(),
+      now()
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.qf.v16.entity.TProduct">
