@@ -13,6 +13,7 @@
         <module>v16-api</module>
         <module>v16-service</module>
         <module>v16-web</module>
+        <module>v16-temp</module>
     </modules>
 
 

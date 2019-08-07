@@ -53,6 +53,13 @@
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 
+		<!--引入FastDFS依赖-->
+		<dependency>
+			<groupId>com.github.tobato</groupId>
+			<artifactId>fastdfs-client</artifactId>
+			<version>1.26.1-RELEASE</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

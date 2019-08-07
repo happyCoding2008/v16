@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -42,5 +43,4 @@ public class V16ProductServiceApplicationTests {
 			System.out.println(tProduct.getName()+"->"+tProduct.getPrice());
 		}
 	}
-
 }
