@@ -1,5 +1,7 @@
 package com.qf.v16.common.base;
 
+import java.util.List;
+
 /**
  * @author huangguizhao
  */
@@ -42,5 +44,10 @@ public abstract class BaseServiceImpl<T> implements IBaseService<T>{
     @Override
     public int updateByPrimaryKey(T record) {
         return getBaseDao().updateByPrimaryKey(record);
+    }
+
+    @Override
+    public List<T> list() {
+        return getBaseDao().list();
     }
 }

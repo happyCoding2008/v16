@@ -2,7 +2,9 @@ package com.qf.v16productservice;
 
 import com.github.pagehelper.PageInfo;
 import com.qf.v16.api.IProductService;
+import com.qf.v16.api.IProductTypeService;
 import com.qf.v16.entity.TProduct;
+import com.qf.v16.entity.TProductType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ public class V16ProductServiceApplicationTests {
 
 	@Autowired
 	private IProductService productService;
+
+	@Autowired
+	private IProductTypeService productTypeService;
 
 	@Autowired
 	private DataSource dataSource;
@@ -41,6 +46,14 @@ public class V16ProductServiceApplicationTests {
 		List<TProduct> list = pageInfo.getList();
 		for (TProduct tProduct : list) {
 			System.out.println(tProduct.getName()+"->"+tProduct.getPrice());
+		}
+	}
+
+	@Test
+	public void testList(){
+		List<TProductType> list = productTypeService.list();
+		for (TProductType productType : list) {
+			System.out.println(productType.getId()+"->"+productType.getName());
 		}
 	}
 }

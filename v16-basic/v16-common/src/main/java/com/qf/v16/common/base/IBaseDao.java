@@ -1,5 +1,7 @@
 package com.qf.v16.common.base;
 
+import java.util.List;
+
 /**
  * @author huangguizhao
  */
@@ -17,4 +19,6 @@ public interface IBaseDao<T> {
     int updateByPrimaryKeyWithBLOBs(T record);
 
     int updateByPrimaryKey(T record);
+
+    List<T> list();
 }

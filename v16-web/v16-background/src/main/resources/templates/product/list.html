@@ -133,9 +133,13 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="productDesc" class="col-sm-2 control-label">商品描述</label>
+                            <label for="productDescEditor" class="col-sm-2 control-label">商品描述</label>
                             <div class="col-sm-10">
-                                <textarea class="form-control" id="productDesc" name="productDesc"></textarea>
+                                <div id="productDescEditor">
+                                </div>
+                                <!--<textarea class="form-control" id="productDesc" name="productDesc"></textarea>-->
+                                <!--隐藏域保存信息-->
+                                <input type="hidden" id="productDesc" name="productDesc"/>
                             </div>
                         </div>
                     </form>
@@ -154,6 +158,9 @@
     <!--导入uploadify插件-->
     <script src="js/jquery.uploadifive.js"></script>
 
+    <!--引入富文本框插件-->
+    <script src="https://unpkg.com/wangeditor@3.1.1/release/wangEditor.min.js"></script>
+
     <script type="text/javascript">
         $(function () {
             //1.為添加按鈕綁定事件
@@ -166,8 +173,15 @@
 
             //2.为提交按钮绑定事件
             $("#add").click(function () {
+                //听取富文本框的内容。
+                var productDescHTML = editor.txt.html();
+                alert(productDescHTML);
+                //填充到商品描述的隐藏域
+                $("#productDesc").val(productDescHTML);
+
                 //提交表单
                 $("#addForm").submit();
+
             });
 
             //3.实现单个删除
@@ -212,6 +226,29 @@
                 }
                 // Put your options here
             });
+
+            //5.初始化富文本框组件
+            var E = window.wangEditor;
+            var editor = new E('#productDescEditor');
+            // 自定义菜单配置
+            editor.customConfig.menus = [
+                'head',  // 标题
+                'bold',  // 粗体
+                'fontSize',  // 字号
+                'fontName',  // 字体
+                'italic',  // 斜体
+                'justify',  // 对齐方式
+                'image',  // 插入图片
+                'table',  // 表格
+                'undo',  // 撤销
+                'redo'  // 重复
+            ];
+            // 配置服务器端地址
+            editor.customConfig.uploadImgServer = 'file/multiUpload';
+            //
+            editor.customConfig.uploadFileName = 'files';
+            //
+            editor.create();
         })
     </script>
 </body>
