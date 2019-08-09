@@ -129,4 +129,34 @@ public class SearchService implements ISearchService {
     }
 
 
+    @Override
+    public ResultBean updateById(Long id) {
+        //1.获取到数据
+        TProduct product = productMapper.selectByPrimaryKey(id);
+        //2.将对象同步到索引库
+        //3.product -> document
+        SolrInputDocument document = new SolrInputDocument();
+        document.setField("id",product.getId());
+        document.setField("product_name",product.getName());
+        document.setField("product_price",product.getPrice());
+        document.setField("product_sale_point",product.getSalePoint());
+        document.setField("product_images",product.getImages());
+        //4.添加
+        try {
+            solrClient.add(document);
+        } catch (SolrServerException | IOException e) {
+            //TODO 如果处理方式不同，则应该分别catch处理
+            e.printStackTrace();
+            return new ResultBean("500","添加索引库失败！");
+        }
+        try {
+            solrClient.commit();
+        } catch (SolrServerException | IOException e) {
+            e.printStackTrace();
+            return new ResultBean("500","提交到索引库失败！");
+        }
+        return new ResultBean("200","同步完成！");
+    }
+
+
 }

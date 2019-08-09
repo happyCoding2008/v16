@@ -15,4 +15,6 @@ public interface ISearchService {
     public ResultBean synAllData();
 
     public ResultBean queryByKeywords(String keywords);
+
+    public ResultBean updateById(Long id);
 }

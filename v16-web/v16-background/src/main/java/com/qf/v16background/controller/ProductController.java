@@ -2,6 +2,7 @@ package com.qf.v16background.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.github.pagehelper.PageInfo;
+import com.qf.api.ISearchService;
 import com.qf.v16.api.IProductService;
 import com.qf.v16.api.vo.ProductVO;
 import com.qf.v16.common.pojo.ResultBean;
@@ -27,6 +28,9 @@ public class ProductController {
 
     @Reference
     private IProductService productService;
+
+    @Reference
+    private ISearchService searchService;
 
     @RequestMapping("getById/{id}")
     @ResponseBody
@@ -58,6 +62,13 @@ public class ProductController {
     public String add(ProductVO vo){//vo view Object
         Long newId = productService.add(vo);
         //TODO 后续作为通知其他系统做相关操作的标志
+
+        //调用搜索服务的更新接口
+        searchService.updateById(newId);
+
+        //调用http接口
+        //HttpClient Apache
+
         return "redirect:/product/page/1/1";
     }
 
