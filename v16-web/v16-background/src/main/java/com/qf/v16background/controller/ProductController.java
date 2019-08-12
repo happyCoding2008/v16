@@ -5,8 +5,11 @@ import com.github.pagehelper.PageInfo;
 import com.qf.api.ISearchService;
 import com.qf.v16.api.IProductService;
 import com.qf.v16.api.vo.ProductVO;
+import com.qf.v16.common.constant.RabbitMQConstant;
 import com.qf.v16.common.pojo.ResultBean;
 import com.qf.v16.entity.TProduct;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +34,9 @@ public class ProductController {
 
     @Reference
     private ISearchService searchService;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @RequestMapping("getById/{id}")
     @ResponseBody
@@ -63,7 +69,9 @@ public class ProductController {
         Long newId = productService.add(vo);
         //TODO 后续作为通知其他系统做相关操作的标志
 
-        //发送消息到中间件即可
+        //发送消息到中间件即可,发送到交换机即可
+        rabbitTemplate.convertAndSend(
+                RabbitMQConstant.BACKGROUND_PRODUCT_EXCHANGE,"product.add",newId);
 
         //调用搜索服务的更新接口
         //searchService.updateById(newId);
