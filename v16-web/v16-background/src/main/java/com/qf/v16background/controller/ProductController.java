@@ -63,8 +63,10 @@ public class ProductController {
         Long newId = productService.add(vo);
         //TODO 后续作为通知其他系统做相关操作的标志
 
+        //发送消息到中间件即可
+
         //调用搜索服务的更新接口
-        searchService.updateById(newId);
+        //searchService.updateById(newId);
 
         //调用http接口
         //HttpClient Apache
