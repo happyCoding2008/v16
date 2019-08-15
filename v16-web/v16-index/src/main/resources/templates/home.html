@@ -39,7 +39,7 @@
     <div class="dianji f-r">
         <div class="btn1">
             <button class="btn1-l">注册</button>
-            <button class="btn1-r">登录</button>
+            <button class="btn1-r" id="login">登录</button>
             <div style="clear:both;"></div>
         </div>
         <button class="btn2">商家入口    ></button>
@@ -1432,5 +1432,44 @@
         沪ICP备13044278号<span>|</span>合字B1.B2-20130004<span>|</span>营业执照<span>|</span>互联网药品信息服务资格证<span>|</span>互联网药品交易服务资格证
     </p>
 </div>
+
+<script type="text/javascript">
+    $(function () {
+        $("#login").click(function () {
+            location.href = "http://localhost:9096/user/login";
+        });
+
+        //验证当前的登录状态
+        $.ajax({
+            url:"http://localhost:9096/user/checkIsLogin",
+            crossDomain:true,
+            xhrFields:{withCredentials:true},
+            success:function (result) {
+                //ajax
+                console.log(result);
+                if(result.statusCode == 200){
+                    alert("已经登录！");
+                    //替换信息为注销
+                }
+            }
+        })
+
+        //SpringMVC4.2之前的处理方式
+        /*$.ajax({
+            url:"http://localhost:9096/user/checkIsLogin4JSONP",
+            jsonp:"callback",
+            jsonpCallback:"deal",
+            dataType:"jsonp"
+        })*/
+    })
+    
+</script>
+
+<script type="text/javascript">
+    function deal(result) {
+        console.log(result);
+    }
+</script>
+<!--<script src="http://localhost:9096/user/checkIsLogin4JSONP?callback=deal"></script>-->
 </body>
 </html>

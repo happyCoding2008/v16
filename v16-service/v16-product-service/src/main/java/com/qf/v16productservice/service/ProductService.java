@@ -37,6 +37,7 @@ public class ProductService extends BaseServiceImpl<TProduct> implements IProduc
 
     @Override
     public List<TProduct> list() {
+
         return productMapper.list();
     }
 

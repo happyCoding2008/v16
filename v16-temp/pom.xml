@@ -13,6 +13,9 @@
     <packaging>pom</packaging>
     <modules>
         <module>rabbitmq-java</module>
+        <module>javase</module>
+        <module>jedis</module>
+        <module>spring-data-redis</module>
     </modules>
 
 

@@ -14,6 +14,7 @@
     <modules>
         <module>v16-product-api</module>
         <module>v16-search-api</module>
+        <module>v16-user-api</module>
     </modules>
 
 
