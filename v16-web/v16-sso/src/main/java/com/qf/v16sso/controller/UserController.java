@@ -80,6 +80,11 @@ public class UserController {
 
             //4.将cookie写到浏览器
             response.addCookie(cookie);
+
+            //调用购物车的合并接口
+            //同步 HTTP HttpClient
+
+            //异步
         }
         return resultBean;
     }
@@ -132,6 +137,7 @@ public class UserController {
             cookie.setPath("/");
             cookie.setHttpOnly(true);
             cookie.setMaxAge(0);
+            cookie.setDomain("qf.com");
 
             response.addCookie(cookie);
 

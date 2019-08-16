@@ -1,5 +1,6 @@
 package com.qf.v16userservice.service;
 
+import com.alibaba.dubbo.common.threadpool.support.cached.CachedThreadPool;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.qf.api.IUserService;
 import com.qf.v16.common.base.BaseServiceImpl;
@@ -49,23 +50,6 @@ public class UserServiceImpl extends BaseServiceImpl<TUser> implements IUserServ
         return new ResultBean("404","账号或密码错误！");
     }
 
-    /*@Override
-    public ResultBean checkIsLogin(String uuid) {
-        //1.根据获取到的uuid，组成一个key
-        StringBuilder key = new StringBuilder("usertoken:").append(uuid);
-        //2.查询redis中，是否存在对应的记录
-        TUser currentUser = (TUser) redisTemplate.opsForValue().get(key.toString());
-        //3.如果存在，则表示处于登录状态
-        if(currentUser != null){
-            //4.刷新凭证的有效期
-            redisTemplate.expire(key.toString(),30,TimeUnit.MINUTES);
-            //5.返回结果
-            return new ResultBean("200",uuid);
-        }
-        //5.如果不存在，则表示未登录状态
-        return new ResultBean("404","当前用户未登录！");
-    }*/
-
     @Override
     public ResultBean checkIsLogin(String jwtToken) {
         //1.解析令牌
@@ -92,6 +76,20 @@ public class UserServiceImpl extends BaseServiceImpl<TUser> implements IUserServ
         //2.删除凭证信息
         redisTemplate.delete(key.toString());
         return new ResultBean("200","已删除凭证信息！");
+    }
+
+    @Override
+    public ResultBean parseTokenGetId(String token) {
+        JwtUtils jwtUtils = new JwtUtils();
+        jwtUtils.setSecretKey("java1904");
+
+        try {
+            Claims claims = jwtUtils.parseJwtToken(token);
+            String id = claims.getId();
+            return new ResultBean("200",id);
+        } catch (SignatureException e){
+            return new ResultBean("404","令牌解析错误！");
+        }
     }
 
     @Override

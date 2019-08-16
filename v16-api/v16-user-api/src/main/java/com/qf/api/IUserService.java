@@ -29,4 +29,11 @@ public interface IUserService extends IBaseService<TUser>{
      * @return
      */
     public ResultBean logout(String uuid);
+
+    /**
+     * 解析令牌，获取令牌里面存储的id信息
+     * @param token
+     * @return
+     */
+    public ResultBean parseTokenGetId(String token);
 }
