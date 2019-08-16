@@ -16,6 +16,7 @@
         <module>javase</module>
         <module>jedis</module>
         <module>spring-data-redis</module>
+        <module>jwt</module>
     </modules>
 
 

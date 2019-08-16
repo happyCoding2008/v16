@@ -7,6 +7,9 @@ import com.qf.v16.common.base.IBaseDao;
 import com.qf.v16.common.pojo.ResultBean;
 import com.qf.v16.entity.TUser;
 import com.qf.v16.mapper.TUserMapper;
+import com.qf.v16userservice.util.JwtUtils;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -32,25 +35,21 @@ public class UserServiceImpl extends BaseServiceImpl<TUser> implements IUserServ
         TUser currentUser = userMapper.selectByUsername(user.getUsername());
         //2.做密码的匹配判断
         if(user.getPassword().equals(currentUser.getPassword())){
-            //登录验证成功！
-            //1，生成唯一标识uuid
-            String uuid = UUID.randomUUID().toString();
-            //2，将一对key-value保存到redis中，并且设置有效期为30分钟
-            //usertoken:uuid---------userin
-            StringBuilder key = new StringBuilder("usertoken:").append(uuid);
-            //为安全性，将密码去掉
-            currentUser.setPassword(null);
-            //3,保存到Redis中
-            redisTemplate.opsForValue().set(key.toString(),currentUser);
-            redisTemplate.expire(key.toString(),30, TimeUnit.MINUTES);
-            //4.返回结果
-            return new ResultBean("200",uuid);
+            //登录验证成功！ redis---》JWT
+            //1.生成令牌
+            JwtUtils jwtUtils = new JwtUtils();
+            jwtUtils.setTtl(30*60*1000);
+            jwtUtils.setSecretKey("java1904");
+
+            String jwtToken = jwtUtils.createJwtToken(currentUser.getId().toString(), currentUser.getUsername());
+            //2.返回结果
+            return new ResultBean("200",jwtToken);
         }
         //登录验证失败！
         return new ResultBean("404","账号或密码错误！");
     }
 
-    @Override
+    /*@Override
     public ResultBean checkIsLogin(String uuid) {
         //1.根据获取到的uuid，组成一个key
         StringBuilder key = new StringBuilder("usertoken:").append(uuid);
@@ -65,10 +64,29 @@ public class UserServiceImpl extends BaseServiceImpl<TUser> implements IUserServ
         }
         //5.如果不存在，则表示未登录状态
         return new ResultBean("404","当前用户未登录！");
+    }*/
+
+    @Override
+    public ResultBean checkIsLogin(String jwtToken) {
+        //1.解析令牌
+        JwtUtils jwtUtils = new JwtUtils();
+        jwtUtils.setSecretKey("java1904");
+
+        try {
+            Claims claims = jwtUtils.parseJwtToken(jwtToken);
+            //获取到用户的信息
+            String username = claims.getSubject();
+            //TODO 刷新令牌的有效期
+            return  new ResultBean("200",jwtToken);
+        }catch (SignatureException e){
+            //出现异常，则表示令牌有问题或者令牌已过期
+            return new ResultBean("404","当前用户未登录！");
+        }
     }
 
     @Override
     public ResultBean logout(String uuid) {
+        //如果是采用令牌的方式，服务端无需做任何操作，因为令牌只保存在客户端，而服务端只是对令牌的合法性做认证
         //1.根据获取到的uuid，组成一个key
         StringBuilder key = new StringBuilder("usertoken:").append(uuid);
         //2.删除凭证信息

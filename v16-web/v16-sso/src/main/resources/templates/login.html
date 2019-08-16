@@ -114,16 +114,19 @@
             var password = $("#password").val();
             //2.提交请求给后台
             $.ajax({
+                type: "POST",
                 url:"user/checkLogin",
                 data:"username="+username+"&password="+password,
                 success:function (result) {
                     console.log(result);
                     if(result.statusCode == 200){
-                        location.href = "http://localhost:9091/index/home";
+                        alert(1);
+                        //location.href = "http://localhost:9091/index/home";
                     }else{
                         alert(result.data);
                     }
                 }
+
             })
         })
     })

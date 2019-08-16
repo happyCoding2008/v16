@@ -7,10 +7,12 @@ import com.qf.api.IUserService;
 import com.qf.v16.common.pojo.ResultBean;
 import com.qf.v16.entity.TUser;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -57,10 +59,11 @@ public class UserController {
 
     @RequestMapping("checkLogin")
     @ResponseBody
-    public ResultBean<String> checkLogin(String username, String password,
+    public ResultBean<String> checkLogin(TUser user,
                                          HttpServletResponse response){
+
         //1.获取到账号和密码
-        TUser user = new TUser(username,password);
+        //TUser user = new TUser(username,password);
         //2.调用服务，判断账号是否正确
         ResultBean<String> resultBean = userService.checkLogin(user);
         //3.如果当前账号正确，则写cookie
@@ -72,6 +75,8 @@ public class UserController {
             cookie.setPath("/");
             //防止XSS攻击，设置为true，表示客户端无法通过脚本获取到我们的cookie信息
             cookie.setHttpOnly(true);
+            //为了实现同父域下面的所有子域名网站都可以共享该cookie，需要设置cookie的domain
+            cookie.setDomain("qf.com");
 
             //4.将cookie写到浏览器
             response.addCookie(cookie);
@@ -121,7 +126,7 @@ public class UserController {
         if(uuid != null){
             //1.获取uuid
             //2.调用服务，删除保存到redis中的凭证信息
-            ResultBean resultBean = userService.logout(uuid);
+            //ResultBean resultBean = userService.logout(uuid);
             //3.删除客户端的cookie,设置该cookie的有效期为0
             Cookie cookie = new Cookie("user_token",uuid);
             cookie.setPath("/");
@@ -130,7 +135,7 @@ public class UserController {
 
             response.addCookie(cookie);
 
-            return resultBean;
+            return new ResultBean("200","注销成功！");
         }
 
         return new ResultBean("404","当前未登录！");
