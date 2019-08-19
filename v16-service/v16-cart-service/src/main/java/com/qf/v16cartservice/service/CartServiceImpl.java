@@ -95,7 +95,52 @@ public class CartServiceImpl implements ICartService{
 
     @Override
     public ResultBean merge(String noLoginKey, String loginKey) {
-        //for for
-        return null;
+        //1.获取未登录购物车
+        StringBuilder noLoginRedisKey = new StringBuilder("user_cart:").append(noLoginKey);
+        Map<Object, Object> noLoginCart = redisTemplate.opsForHash().entries(noLoginRedisKey.toString());
+        if(noLoginCart.size() == 0){
+            return new ResultBean("200","不存在未登录购物车，无需合并！");
+        }
+
+        //2.获取已登录购物车
+        StringBuilder loginRedisKey = new StringBuilder("user_cart:").append(loginKey);
+        Map<Object, Object> loginCart = redisTemplate.opsForHash().entries(loginRedisKey.toString());
+
+        if(loginCart.size() == 0){
+            //不存在已登录购物车
+            //将未登录购物车作为已登录购物车存放进去即可
+            redisTemplate.opsForHash().putAll(loginRedisKey.toString(),noLoginCart);
+            //删除未登录购物车
+            redisTemplate.delete(noLoginRedisKey.toString());
+            //
+            return new ResultBean("200","不存在已登录购物车，直接将原先的未登录转换为已登录即可！");
+        }
+
+        //3.两辆购物车都存在,才需要做真正意义的合并
+        //noLoginCart--->loginCart
+        Set<Map.Entry<Object, Object>> noLoginEntries = noLoginCart.entrySet();
+        //
+        for (Map.Entry<Object, Object> noLoginEntry : noLoginEntries) {
+            //noLoginEntry.getKey()
+            if(redisTemplate.opsForHash().get(loginRedisKey.toString(),noLoginEntry.getKey()) != null){
+                //存在，则需要修改数量
+                CartItem cartItem = (CartItem) redisTemplate.opsForHash().get(
+                        loginRedisKey.toString(), noLoginEntry.getKey());
+                //
+                CartItem noLoginCartItem = (CartItem) noLoginEntry.getValue();
+                cartItem.setCount(cartItem.getCount()+noLoginCartItem.getCount());
+                cartItem.setUpdateTime(new Date());
+                //重新写回购物车
+                redisTemplate.opsForHash().put(loginRedisKey.toString(),noLoginEntry.getKey(),cartItem);
+            }else{
+                //不存在，则直接添加
+                redisTemplate.opsForHash().put(loginRedisKey.toString(),noLoginEntry.getKey(),noLoginEntry.getValue());
+            }
+        }
+
+        //最后清理掉未登录购物车
+        redisTemplate.delete(noLoginRedisKey.toString());
+
+        return new ResultBean("200","合并购物车成功！");
     }
 }

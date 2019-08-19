@@ -58,6 +58,11 @@ public class CartItem implements Serializable,Comparable<CartItem>{
 
     @Override
     public int compareTo(CartItem o) {
-        return (int) (o.getUpdateTime().getTime()-this.getUpdateTime().getTime());
+        int result = (int) (o.getUpdateTime().getTime() - this.getUpdateTime().getTime());
+        if(result == 0){
+            //考虑购物车在合并的时候，可能会出现更新时间相同的情况
+            result = -1;
+        }
+        return result;
     }
 }

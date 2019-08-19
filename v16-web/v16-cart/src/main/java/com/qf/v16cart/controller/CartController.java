@@ -45,7 +45,7 @@ public class CartController {
             //1.创建uuid
             uuid = UUID.randomUUID().toString();
             //2.写cookie
-            flushCookie(uuid, response);
+            flushCookie(uuid, response,30*24*60*60);
         }
         //2.调用服务，添加商品到购物车
         return cartService.add(uuid,productId,count);
@@ -69,7 +69,7 @@ public class CartController {
             return new ResultBean("404","您的购物车已经被老公清空了！");
         }
         //更新cookie的有效期
-        flushCookie(uuid,response);
+        flushCookie(uuid,response,30*24*60*60);
         //2.调用服务，查看我的购物车
         return cartService.query(uuid);
     }
@@ -84,7 +84,7 @@ public class CartController {
             return new ResultBean("404","您的购物车已经被老公清空了！");
         }
         //更新cookie的有效期
-        flushCookie(uuid,response);
+        flushCookie(uuid,response,30*24*60*60);
         //2.更新购物车
         return cartService.update(uuid,productId,count);
     }
@@ -98,7 +98,7 @@ public class CartController {
             return new ResultBean("404","您的购物车已经被老公清空了！");
         }
         //更新cookie的有效期
-        flushCookie(uuid,response);
+        flushCookie(uuid,response,30*24*60*60);
         //2.更新购物车
         return cartService.del(uuid,productId);
     }
@@ -111,17 +111,19 @@ public class CartController {
         //1.获取当前用户的状态
         String userId = (String) request.getAttribute("userId");
         if(userId != null){
+            //清楚掉cookie
+            flushCookie(uuid,response,0);
             //TODO 发送异步消息，更新数据库的数据
             return cartService.merge(uuid,userId);
         }
         return new ResultBean("404","无需合并");
     }
 
-    private void flushCookie(@CookieValue(name = "user_cart", required = false) String uuid, HttpServletResponse response) {
+    private void flushCookie(@CookieValue(name = "user_cart", required = false) String uuid, HttpServletResponse response,int expire) {
         Cookie cookie = new Cookie("user_cart",uuid);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-        cookie.setMaxAge(30*24*60*60);
+        cookie.setMaxAge(expire);
         cookie.setDomain("qf.com");
         //3.写到客户端
         response.addCookie(cookie);
